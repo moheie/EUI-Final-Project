@@ -9,3 +9,5 @@
 *.releaseBackup
 *.properties
 .env
+ec2-key-pair.pem
+.terraform*
