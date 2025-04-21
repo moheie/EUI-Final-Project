@@ -6,17 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Install Dependencies') {
-            steps {
-                echo 'Installing OpenJDK 17 and Maven...'
-                sh '''
-                    apt-get update
-                    apt-get install openjdk-17-jdk -y
-                    apt install maven -y
-                '''
-            }
-        }
-
+        
         stage('Clone Repository') {
             steps {
                 echo 'Cloning the source code...'
