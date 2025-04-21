@@ -10,9 +10,9 @@ pipeline {
             steps {
                 echo 'Installing OpenJDK 17 and Maven...'
                 sh '''
-                    sudo apt-get update
-                    sudo apt-get install openjdk-17-jdk -y
-                    sudo apt install maven -y
+                    apt-get update
+                    apt-get install openjdk-17-jdk -y
+                    apt install maven -y
                 '''
             }
         }
