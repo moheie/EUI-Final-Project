@@ -1,4 +1,4 @@
-"pipeline {
+pipeline {
     agent any
 
     environment {
@@ -39,17 +39,16 @@
         stage('Dockerize') {
             steps {
                 echo 'Building Docker image...'
-                sh 'docker build -t $DOCKER_IMAGE .'
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                sh 'docker push $DOCKER_IMAGE'
+                sh "docker push ${DOCKER_IMAGE}"
             }
         }
-  
     }
 
     post {
@@ -64,4 +63,4 @@
             echo 'Pipeline failed!'
         }
     }
-}"
+}
