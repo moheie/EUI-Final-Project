@@ -18,6 +18,7 @@ pipeline {
             steps {
                 echo 'Setting up Maven wrapper...'
                 sh '''
+                    ls
                     pwd
                     mvn -N io.takari:maven:wrapper
                 '''
