@@ -1,4 +1,4 @@
-pipeline {
+"pipeline {
     agent any
 
     environment {
@@ -12,56 +12,44 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/ahmedmaged6/EUI-Final-Project'
             }
         }
-
+       
         stage('Setup Maven Wrapper') {
             steps {
                 echo 'Setting up Maven wrapper...'
                 sh '''
-                    cd EUI-Final-Project
                     mvn -N io.takari:maven:wrapper
                 '''
             }
         }
-
+        
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                sh '''
-                    cd EUI-Final-Project
-                    ./mvnw clean package -DskipTests
-                '''
+                sh './mvnw clean package -DskipTests'
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh '''
-                    cd EUI-Final-Project
-                    ./mvnw test
-                '''
+                sh './mvnw test'
             }
         }
 
         stage('Dockerize') {
             steps {
                 echo 'Building Docker image...'
-                sh '''
-                    cd EUI-Final-Project
-                    docker build -t $DOCKER_IMAGE .
-                '''
+                sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 echo 'Pushing Docker image to Docker Hub...'
-                sh '''
-                    cd EUI-Final-Project
-                    docker push $DOCKER_IMAGE
-                '''
+                sh 'docker push $DOCKER_IMAGE'
             }
         }
+  
     }
 
     post {
@@ -76,4 +64,4 @@ pipeline {
             echo 'Pipeline failed!'
         }
     }
-}
+}"
