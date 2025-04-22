@@ -6,14 +6,14 @@ pipeline {
     }
 
     stages {
-        
+
         stage('Clone Repository') {
             steps {
                 echo 'Cloning the source code...'
                 git branch: 'main', url: 'https://github.com/ahmedmaged6/EUI-Final-Project'
             }
         }
-       
+
         stage('Setup Maven Wrapper') {
             steps {
                 echo 'Setting up Maven wrapper...'
@@ -24,7 +24,7 @@ pipeline {
                 '''
             }
         }
-        
+
         stage('Build') {
             steps {
                 echo 'Building the application...'
@@ -48,8 +48,14 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                echo 'Pushing Docker image to Docker Hub...'
-                sh "docker push ${DOCKER_IMAGE}"
+                echo 'Logging into Docker Hub and pushing image...'
+                withCredentials([usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push ${DOCKER_IMAGE}
+                        docker logout
+                    '''
+                }
             }
         }
     }
