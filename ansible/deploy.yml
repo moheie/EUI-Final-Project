@@ -5,9 +5,11 @@
 
   tasks:
     - name: Ensure Docker is installed
-      ansible.builtin.package:
+      ansible.builtin.apt:
         name: docker.io
         state: present
+        update_cache: yes
+      when: ansible_os_family == "Debian"
 
     - name: Ensure Docker service is running
       ansible.builtin.service:
