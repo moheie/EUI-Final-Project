@@ -252,7 +252,8 @@ body>#Banner {
   padding: 0ex 0ex 0ex 0ex;
   width: 99%;
   color: #333;
-  background-color: #FFF;
+  #background-color: #FFF;
+  background-color: #005e21; /* Change to a green color, for example */
   border-width: 0;
 }
 
