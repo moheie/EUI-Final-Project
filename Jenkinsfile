@@ -41,7 +41,7 @@ pipeline {
         stage('Dockerize') {
             steps {
                 echo 'Building Docker image...'
-                sh "docker build -t ${DOCKER_HUB_REPO}:-build-${BUILD_NUMBER} ."
+                sh "docker build -t ${DOCKER_HUB_REPO}:build-${BUILD_NUMBER} ."
             }
         }
 
@@ -51,7 +51,7 @@ pipeline {
                 sh '''
                     echo "Docker username: $DOCKER_CREDENTIALS_USR"
                     echo "$DOCKER_CREDENTIALS_PSW" | docker login -u "$DOCKER_CREDENTIALS_USR" --password-stdin
-                    docker push ${DOCKER_HUB_REPO}:-build-${BUILD_NUMBER}
+                    docker push ${DOCKER_HUB_REPO}:build-${BUILD_NUMBER}
                     docker logout
                 '''
             }
@@ -63,7 +63,7 @@ pipeline {
                 sh '''
                     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
                     --extra-vars "\
-                        docker_image=${DOCKER_HUB_REPO}:-build-${BUILD_NUMBER} \
+                        docker_image=${DOCKER_HUB_REPO}:build-${BUILD_NUMBER} \
                         docker_user=$DOCKER_CREDENTIALS_USR \
                         docker_pass=$DOCKER_CREDENTIALS_PSW \
                         target_server_ip=$TARGET_SERVER_IP \
