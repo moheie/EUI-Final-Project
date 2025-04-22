@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'ahmedmaged6/petstore:latest'
+        TARGET_SERVER_IP = '34.237.77.46'
     }
 
     stages {
@@ -17,11 +18,7 @@ pipeline {
         stage('Setup Maven Wrapper') {
             steps {
                 echo 'Setting up Maven wrapper...'
-                sh '''
-                    ls
-                    pwd
-                    mvn -N io.takari:maven:wrapper
-                '''
+                sh 'mvn -N io.takari:maven:wrapper'
             }
         }
 
@@ -54,6 +51,25 @@ pipeline {
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push ${DOCKER_IMAGE}
                         docker logout
+                    '''
+                }
+            }
+        }
+    
+    stage('Deploy with Ansible') {
+            steps {
+                echo 'Deploying application using Ansible...'
+                withCredentials([
+                    usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS'),
+                    file(credentialsId: 'ssh_key', variable: 'SSH_KEY')
+                ]) {
+                    sh '''
+                        mkdir -p ~/.ssh
+                        cp $SSH_KEY ~/.ssh/id_rsa
+                        chmod 600 ~/.ssh/id_rsa
+                        ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
+                        --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_USER docker_pass=$DOCKER_PASS target_server_ip=$TARGET_SERVER_IP"
+                        rm -f ~/.ssh/id_rsa
                     '''
                 }
             }
