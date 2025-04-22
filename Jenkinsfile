@@ -2,10 +2,9 @@ pipeline {
     agent any
 
     environment {
-        TARGET_SERVER_IP = '34.237.77.46'
         DOCKER_IMAGE = 'ahmedmaged6/petstore:latest'
-        DOCKER_USER = credentials('docker_credentials').username 
-        DOCKER_PASS = credentials('docker_credentials').password 
+        TARGET_SERVER_IP = '34.237.77.46'
+        DOCKER_CREDENTIALS = credentials('docker_credentials') // Binds to DOCKER_CREDENTIALS_USR and DOCKER_CREDENTIALS_PSW
         SSH_KEY = credentials('ssh_key') 
     }
 
@@ -50,7 +49,8 @@ pipeline {
             steps {
                 echo 'Logging into Docker Hub and pushing image...'
                 sh '''
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    echo "Docker username: $DOCKER_CREDENTIALS_USR"
+                    echo "$DOCKER_CREDENTIALS_PSW" | docker login -u "$DOCKER_CREDENTIALS_USR" --password-stdin
                     docker push ${DOCKER_IMAGE}
                     docker logout
                 '''
@@ -65,7 +65,7 @@ pipeline {
                     cp $SSH_KEY ~/.ssh/id_rsa
                     chmod 600 ~/.ssh/id_rsa
                     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
-                    --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_USER docker_pass=$DOCKER_PASS target_server_ip=$TARGET_SERVER_IP"
+                    --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_CREDENTIALS_USR docker_pass=$DOCKER_CREDENTIALS_PSW target_server_ip=$TARGET_SERVER_IP"
                     rm -f ~/.ssh/id_rsa
                 '''
             }
@@ -75,7 +75,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up workspace...'
-            cleanWs()
+            //cleanWs()
         }
         success {
             echo 'Pipeline completed successfully!'
