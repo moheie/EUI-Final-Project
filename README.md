@@ -43,4 +43,3 @@ Github repo containes
 This application build is resulting a .war file not .jar as we saw before. This needs a change in the command that is used to run the application. We will use mvnw as well to run the application as shown below. Here's the command used to run the app:
 
 ./mvnw cargo:run -P tomcat90
-
