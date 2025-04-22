@@ -67,7 +67,7 @@ pipeline {
                         mkdir -p ~/.ssh
                         cp $SSH_KEY ~/.ssh/id_rsa
                         chmod 600 ~/.ssh/id_rsa
-                        ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
+                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
                         --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_USER docker_pass=$DOCKER_PASS target_server_ip=$TARGET_SERVER_IP"
                         rm -f ~/.ssh/id_rsa
                     '''
