@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'ahmedmaged6/petstore:latest'
+        DOCKER_HUB_REPO = 'ahmedmaged6/petstore'
         TARGET_SERVER_IP = '34.237.77.46'
         DOCKER_CREDENTIALS = credentials('docker_credentials') // Binds to DOCKER_CREDENTIALS_USR and DOCKER_CREDENTIALS_PSW
         SSH_KEY = credentials('ssh_key') 
@@ -41,7 +41,7 @@ pipeline {
         stage('Dockerize') {
             steps {
                 echo 'Building Docker image...'
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                sh "docker build -t ${DOCKER_HUB_REPO}-build-${env.BUILD_NUMBER}:latest ."
             }
         }
 
@@ -51,7 +51,7 @@ pipeline {
                 sh '''
                     echo "Docker username: $DOCKER_CREDENTIALS_USR"
                     echo "$DOCKER_CREDENTIALS_PSW" | docker login -u "$DOCKER_CREDENTIALS_USR" --password-stdin
-                    docker push ${DOCKER_IMAGE}
+                    docker push ${DOCKER_HUB_REPO}-build-${env.BUILD_NUMBER}:latest
                     docker logout
                 '''
             }
@@ -62,7 +62,12 @@ pipeline {
                 echo 'Deploying application using Ansible...'
                 sh '''
                     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
-                    --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_CREDENTIALS_USR docker_pass=$DOCKER_CREDENTIALS_PSW target_server_ip=$TARGET_SERVER_IP ssh_key=$SSH_KEY"
+                    --extra-vars "\
+                        docker_image=${DOCKER_HUB_REPO}-build-${env.BUILD_NUMBER}:latest \
+                        docker_user=$DOCKER_CREDENTIALS_USR \
+                        docker_pass=$DOCKER_CREDENTIALS_PSW \
+                        target_server_ip=$TARGET_SERVER_IP \
+                        ssh_key=$SSH_KEY"                
                 '''
             }
         }
