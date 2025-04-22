@@ -61,12 +61,8 @@ pipeline {
             steps {
                 echo 'Deploying application using Ansible...'
                 sh '''
-                    mkdir -p ~/.ssh
-                    cp $SSH_KEY ~/.ssh/id_rsa
-                    chmod 600 ~/.ssh/id_rsa
                     ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
-                    --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_CREDENTIALS_USR docker_pass=$DOCKER_CREDENTIALS_PSW target_server_ip=$TARGET_SERVER_IP"
-                    rm -f ~/.ssh/id_rsa
+                    --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_CREDENTIALS_USR docker_pass=$DOCKER_CREDENTIALS_PSW target_server_ip=$TARGET_SERVER_IP ssh_key=$SSH_KEY"
                 '''
             }
         }
