@@ -4,8 +4,8 @@ pipeline {
     environment {
         TARGET_SERVER_IP = '34.237.77.46'
         DOCKER_IMAGE = 'ahmedmaged6/petstore:latest'
-        DOCKER_USER = credentials('docker_credentials')
-        DOCKER_PASS = credentials('docker_credentials') 
+        DOCKER_USER = credentials('docker_credentials').username 
+        DOCKER_PASS = credentials('docker_credentials').password 
         SSH_KEY = credentials('ssh_key') 
     }
 
