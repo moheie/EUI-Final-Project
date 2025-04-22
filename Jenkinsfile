@@ -2,8 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'ahmedmaged6/petstore:latest'
         TARGET_SERVER_IP = '34.237.77.46'
+        DOCKER_IMAGE = 'ahmedmaged6/petstore:latest'
+        DOCKER_USER = credentials('docker_credentials')
+        DOCKER_PASS = credentials('docker_credentials') 
+        SSH_KEY = credentials('ssh_key') 
     }
 
     stages {
@@ -46,32 +49,25 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 echo 'Logging into Docker Hub and pushing image...'
-                withCredentials([usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ${DOCKER_IMAGE}
-                        docker logout
-                    '''
-                }
+                sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker push ${DOCKER_IMAGE}
+                    docker logout
+                '''
             }
         }
-    
-    stage('Deploy with Ansible') {
+
+        stage('Deploy with Ansible') {
             steps {
                 echo 'Deploying application using Ansible...'
-                withCredentials([
-                    usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS'),
-                    file(credentialsId: 'ssh_key', variable: 'SSH_KEY')
-                ]) {
-                    sh '''
-                        mkdir -p ~/.ssh
-                        cp $SSH_KEY ~/.ssh/id_rsa
-                        chmod 600 ~/.ssh/id_rsa
-                        ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
-                        --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_USER docker_pass=$DOCKER_PASS target_server_ip=$TARGET_SERVER_IP"
-                        rm -f ~/.ssh/id_rsa
-                    '''
-                }
+                sh '''
+                    mkdir -p ~/.ssh
+                    cp $SSH_KEY ~/.ssh/id_rsa
+                    chmod 600 ~/.ssh/id_rsa
+                    ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory.yml ansible/deploy.yml \
+                    --extra-vars "docker_image=$DOCKER_IMAGE docker_user=$DOCKER_USER docker_pass=$DOCKER_PASS target_server_ip=$TARGET_SERVER_IP"
+                    rm -f ~/.ssh/id_rsa
+                '''
             }
         }
     }
@@ -79,7 +75,7 @@ pipeline {
     post {
         always {
             echo 'Cleaning up workspace...'
-            //cleanWs()
+            cleanWs()
         }
         success {
             echo 'Pipeline completed successfully!'
