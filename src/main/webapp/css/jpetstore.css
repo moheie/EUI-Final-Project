@@ -252,7 +252,7 @@ body>#Banner {
   padding: 0ex 0ex 0ex 0ex;
   width: 99%;
   color: #333;
-  background-color: #ADD8E6; /* Changed to light blue */
+  background-color: #FFF;
   border-width: 0;
 }
 
@@ -266,10 +266,11 @@ body>#Banner {
   margin: 0;
   padding: 1ex;
   color: #333;
-  background-color: #ADD8E6; /* Changed to light blue */
+  #background-color: #FFF;
+  background-color: #005e21; /* Change to a green color, for example */
   border-width: 1ex 0ex 2ex 0px;
   border-style: solid;
-  border-color: #ADD8E6; /* Match border to background */
+  border-color: #fff;
 }
 
 #Sidebar {
