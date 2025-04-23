@@ -36,4 +36,4 @@ systemctl restart jenkins
 
 
 # Install Ansible
-sudo apt install ansible
+sudo apt install ansible -y
