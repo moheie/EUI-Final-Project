@@ -263,8 +263,7 @@ body>#Banner {
   margin: 0;
   padding: 1ex;
   color: #333;
-  /*background-color: #FFF;*/
-  background-color: #005e21;  /*Change to a green color, for example */
+  background-color: #cd2121; /*Catalog bg-color*/
   border-width: 1ex 0ex 2ex 0px;
   border-style: solid;
   border-color: #fff;
