@@ -110,26 +110,56 @@ A GitHub webhook is configured to trigger the Jenkins pipeline on every push to 
 
 ## 📜 Jenkins Pipeline (Jenkinsfile)
 
-### 🧪 CI Stages:
-1. **Clone repository**  
+### 🧪 CI Stages
+
+1. **Clone Repository**  
+
 2. **Setup Maven Wrapper**  
-3. **Build the code** with `./mvnw clean package`  
-4. **Run tests** with `./mvnw test`  
-5. **Dockerize** the `.war` file  
-6. **Push** Docker image to Docker Hub  
+
+3. **Build the Code** (`./mvnw clean package`)  
+<p align="center">
+  <img src="./assets/jenkins-stage-build.png" alt="Build Stage">
+  <br>
+  <em>Compiling the Java application and packaging into a WAR file</em>
+</p>
+
+4. **Run Tests** (`./mvnw test`)  
+<p align="center">
+  <img src="./assets/jenkins-stage-test.png" alt="Test Stage">
+  <br>
+  <em>Running unit tests using Maven</em>
+</p>
+
+5. **Dockerize the App**  
+<p align="center">
+  <img src="./assets/jenkins-stage-dockerize.png" alt="Dockerize Stage">
+  <br>
+  <em>Building a Docker image from the WAR file</em>
+</p>
+
+6. **Push Docker Image to Docker Hub**  
+<p align="center">
+  <img src="./assets/docker-hub.png" alt="Docker docker-hub">
+  <br>
+  <em>Pushing the Docker image to Docker Hub registry</em>
+</p>
+
 
 ### 🚀 CD Stages:
-7. **Deploy** via Ansible  
 
-📸 **Screenshots to add:**
-- Jenkins pipeline (console or Blue Ocean)
-- Logs of each stage:
-  - Clone
-  - Build
-  - Test
-  - Dockerize
-  - Push to Docker Hub
-  - Ansible Deploy
+7. **Deploy** via Ansible  
+<p align="center">
+  <img src="./assets/jenkins-stage-deploy.png" alt="Ansible Stage">
+  <br>
+  <em>Deployment automation with Ansible targeting the webserver EC2</em>
+</p>
+
+8. **App Running on EC2 Webserver**  
+<p align="center">
+  <img src="./assets/webserver-ui.png" alt="Webserver UI">
+  <br>
+  <em>jPetStore running at <code>http://&lt;webserver_eip&gt;:8080/jpetstore</code></em>
+</p>
 
 
 ---
