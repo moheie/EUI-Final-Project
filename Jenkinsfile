@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO = 'ahmedmaged6/petstore'
-        TARGET_SERVER_IP = '52.204.206.135'
+        DOCKER_HUB_REPO = 'moheie/jpetstore'
+        TARGET_SERVER_IP = '54.160.125.134'
         DOCKER_CREDENTIALS = credentials('docker_credentials') // Binds to DOCKER_CREDENTIALS_USR and DOCKER_CREDENTIALS_PSW
         SSH_KEY = credentials('ssh_key') 
     }
@@ -13,7 +13,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 echo 'Cloning the source code...'
-                git branch: 'main', url: 'https://github.com/ahmedmaged6/EUI-Final-Project'
+                git branch: 'test', url: 'https://github.com/moheie/EUI-Final-Project'
             }
         }
 
