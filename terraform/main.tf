@@ -17,21 +17,29 @@ resource "local_file" "private_key" {
   file_permission = "0600"  # Secure permissions for the private key
 }
 
-# Create a security group that allows all traffic
-resource "aws_security_group" "allow_all" {
-  name        = "allow-all-traffic"
-  description = "Allow all inbound and outbound traffic for EC2 instances"
+# Create a security group that allows specific inbound traffic
+resource "aws_security_group" "allow_web" {
+  name        = "allow-web-traffic"
+  description = "Allow HTTP and Jenkins inbound traffic for EC2 instances"
 
   ingress {
-    description = "All traffic"
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    description = "HTTP for Webserver"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
-    description = "All traffic"
+    description = "All outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -39,7 +47,7 @@ resource "aws_security_group" "allow_all" {
   }
 
   tags = {
-    Name = "allow-all-traffic"
+    Name = "allow-web-traffic"
   }
 }
 
@@ -47,7 +55,7 @@ resource "aws_security_group" "allow_all" {
 resource "aws_instance" "jenkins" {
   ami           = var.ec2-ubuntu-ami
   instance_type = "t2.medium"
-  vpc_security_group_ids = [aws_security_group.allow_all.id]
+  vpc_security_group_ids = [aws_security_group.allow_web.id]
   key_name = aws_key_pair.ec2_key.key_name
   user_data = file("${path.module}/ec2-userdata/jenkins-userdata.sh")
   #user_data_replace_on_change = true
@@ -60,7 +68,7 @@ resource "aws_instance" "jenkins" {
 resource "aws_instance" "webserver" {
   ami           = var.ec2-ubuntu-ami
   instance_type = "t2.micro"
-  vpc_security_group_ids = [aws_security_group.allow_all.id]
+  vpc_security_group_ids = [aws_security_group.allow_web.id]
   key_name = aws_key_pair.ec2_key.key_name
 
   tags = {
@@ -86,4 +94,4 @@ resource "aws_eip" "webserver_eip" {
   tags = {
     Name = "webserver-ec2-eip"
   }
-}
+} 
